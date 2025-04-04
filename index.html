@@ -174,11 +174,15 @@
             const maxX = GRID_SIZE_X - 1;
             const maxY = GRID_SIZE_Y - 1;
             
-            for(let i = 0; i < length; i++) {
-                const x = vertical ? startX : Math.min(startX + i, maxX);
-                const y = vertical ? Math.min(startY + i, maxY) : startY;
+            // Ensure walls stay within grid bounds
+            const actualLength = Math.min(length, vertical ? maxY - startY : maxX - startX);
+            
+            for(let i = 0; i < actualLength; i++) {
+                const x = vertical ? startX : startX + i;
+                const y = vertical ? startY + i : startY;
                 
-                if(x > maxX || y > maxY) break;
+                // Skip creation if position is out of bounds
+                if(x > maxX || y > maxY) continue;
                 
                 const tree = createElement('🌳', 'tree');
                 positionElement(tree, x, y);
@@ -193,11 +197,12 @@
             bombs = [];
             trees = [];
 
-            createTreeWall(3, 2, 8, true);
-            createTreeWall(10, 5, 6, false);
-            createTreeWall(7, 10, 5, true);
+            // Create contained tree walls
+            createTreeWall(3, 2, 5, true);    // Vertical wall (5 cells tall)
+            createTreeWall(5, 4, 4, false);   // Horizontal wall (4 cells wide)
+            createTreeWall(8, 3, 3, true);    // Vertical wall (3 cells tall)
 
-            for(let i = 0; i < 10; i++) {
+            for(let i = 0; i < 7; i++) {
                 const tree = createElement('🌳', 'tree');
                 let x, y;
                 do {
@@ -232,7 +237,19 @@
         function createFish() {
             while(fishes.length < 3) {
                 const fish = createElement('🐟', 'fish');
+                let validPosition = false;
                 let x, y;
+
+                // Retry until valid position found
+                while(!validPosition) {
+                    x = Math.floor(Math.random() * GRID_SIZE_X);
+                    y = Math.floor(Math.random() * GRID_SIZE_Y);
+                    
+                    // Check if position is accessible
+                    validPosition = !checkCollision(x, y) && 
+                                !isPositionSurrounded(x, y);
+                }
+
                 do {
                     x = Math.floor(Math.random() * GRID_SIZE_X);
                     y = Math.floor(Math.random() * GRID_SIZE_Y);
@@ -245,6 +262,20 @@
                 gameArea.appendChild(fish);
                 fishes.push({element: fish, x, y});
             }
+        }
+
+        function isPositionSurrounded(x, y) {
+            // Check all adjacent cells
+            const directions = [
+                [x+1, y], [x-1, y],
+                [x, y+1], [x, y-1]
+            ];
+            
+            return directions.every(([nx, ny]) => {
+                return checkCollision(nx, ny) || 
+                    nx < 0 || nx >= GRID_SIZE_X ||
+                    ny < 0 || ny >= GRID_SIZE_Y;
+            });
         }
 
         function checkCollision(x, y) {
