@@ -2,7 +2,12 @@
 <html>
 <head>
     <title>Cat Birthday Adventure!</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             background: #fff0f5;
             margin: 0;
@@ -162,14 +167,23 @@
             }
         }
 
-        @media (max-height: 700px) {
+        @media (hover: none) and (pointer: coarse) {
             .touch-controls {
-                bottom: 15px;
+                display: flex !important;
+                bottom: 20px;
+                gap: 15px;
             }
+            
             .touch-btn {
-                width: 60px;
-                height: 60px;
+                width: 65px;
+                height: 65px;
                 font-size: 24px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .touch-controls {
+                display: flex !important;
             }
         }
     </style>
@@ -439,6 +453,13 @@
             resetGame();
         }
 
+        function detectTouch() {
+            if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+                document.body.classList.add('touch-device');
+                document.querySelector('.touch-controls').style.display = 'flex';
+            }
+        }
+
         const gameArea = document.getElementById('gameArea');
         const cat = createElement('😸', 'cat');
         gameArea.appendChild(cat);
@@ -470,6 +491,8 @@
         document.addEventListener('touchmove', function(e) {
             if(e.scale !== 1) { e.preventDefault(); }
         }, { passive: false });
+
+        window.onload = detectTouch;
     </script>
 </body>
 </html>
