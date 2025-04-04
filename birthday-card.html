@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Happy Birthday!</title>
+    <style>
+        body {
+            background: linear-gradient(45deg, #ffb6c1, #fffacd);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Comic Sans MS', cursive;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(255,105,180,0.3);
+            text-align: center;
+            max-width: 500px;
+            width: 95%;
+            margin: 20px;
+            position: relative;
+        }
+
+        .cat-animation {
+            font-size: 8rem;
+            margin: 2rem 0;
+            animation: bounce 1s infinite;
+        }
+
+        .message {
+            font-size: 1.5rem;
+            color: #666;
+            margin: 2rem 0;
+        }
+
+        button {
+            background: #ff69b4;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: transform 0.3s;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            transform: scale(1.1);
+            background: #ff1493;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .confetti {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .confetti span {
+            position: absolute;
+            animation: confetti-fall 3s infinite;
+            font-size: 1.5rem;
+        }
+
+        @keyframes confetti-fall {
+            0% { transform: translateY(-100%) rotate(0deg); }
+            100% { transform: translateY(100vh) rotate(360deg); }
+        }
+
+        @media (max-width: 600px) {
+            .card {
+                padding: 1.5rem;
+            }
+            .cat-animation {
+                font-size: 6rem;
+            }
+            .message {
+                font-size: 1.2rem;
+            }
+            button {
+                padding: 12px 24px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="confetti">
+            <span style="left:10%">🎉</span>
+            <span style="left:30%">✨</span>
+            <span style="left:50%">🎊</span>
+            <span style="left:70%">🌟</span>
+            <span style="left:90%">💫</span>
+        </div>
+
+        <div class="cat-animation">😻</div>
+        <h1>Happy Birthday! 🎂</h1>
+        
+        <div class="message">
+            Wishing you a day filled with:<br>
+            😻 Purr-fect moments<br>
+            🐟 Tasty treats<br>
+            🧶 Endless fun<br>
+            🛌 Cozy naps<br>
+            🐾 And lots of love!
+        </div>
+
+        <button onclick="window.location.href='index.html'">
+            Play Again! 🎮
+        </button>
+    </div>
+</body>
+</html>
