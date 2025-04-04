@@ -2,6 +2,8 @@
 
 An interactive HTML/CSS/JavaScript birthday card with a playful cat-themed mini-game! Collect fish, avoid bombs, and unlock a festive greeting card.
 
+[![🐱 Play Now](https://img.shields.io/badge/🐱_Play_Now-Live_Demo-2ecc71?style=for-the-badge&logo=github)](https://junzmint.github.io/happy-meow-day/)
+
 ## Features
 - 🕹️ **Mini-Game**: Arrow-key controls to navigate a cat character
 - 🐟 **Collectibles**: Earn points by gathering fish (+50 points)
