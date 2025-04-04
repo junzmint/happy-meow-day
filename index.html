@@ -13,6 +13,7 @@
             font-family: 'Comic Sans MS', cursive;
             overflow-y: auto;
             padding: 20px;
+            touch-action: manipulation;
         }
 
         h1 {
@@ -52,6 +53,7 @@
             cursor: pointer;
             font-size: 16px;
             transition: transform 0.3s;
+            -webkit-tap-highlight-color: transparent;
         }
 
         button:hover {
@@ -79,6 +81,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            user-select: none;
         }
 
         #cat {
@@ -100,6 +103,36 @@
             color: #2ecc71;
             font-size: 50px;
             z-index: 1;
+        }
+
+        /* Touch Controls */
+        .touch-controls {
+            display: none;
+            position: fixed;
+            bottom: 30px;
+            width: 100%;
+            justify-content: center;
+            gap: 20px;
+            z-index: 1000;
+        }
+
+        .touch-btn {
+            width: 70px;
+            height: 70px;
+            background: rgba(255,105,180,0.7);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .touch-btn:active {
+            transform: scale(0.9);
+            background: rgba(255,20,147,0.9);
         }
 
         @keyframes float {
@@ -124,6 +157,20 @@
                 padding: 10px 20px;
                 font-size: 14px;
             }
+            .touch-controls {
+                display: flex;
+            }
+        }
+
+        @media (max-height: 700px) {
+            .touch-controls {
+                bottom: 15px;
+            }
+            .touch-btn {
+                width: 60px;
+                height: 60px;
+                font-size: 24px;
+            }
         }
     </style>
 </head>
@@ -145,6 +192,14 @@
     
     <div class="game-container" id="gameArea"></div>
 
+    <!-- Touch Controls -->
+    <div class="touch-controls">
+        <div class="touch-btn" id="touch-up">↑</div>
+        <div class="touch-btn" id="touch-left">←</div>
+        <div class="touch-btn" id="touch-down">↓</div>
+        <div class="touch-btn" id="touch-right">→</div>
+    </div>
+
     <script>
         const GRID_SIZE_X = 13;
         const GRID_SIZE_Y = 10;
@@ -157,6 +212,7 @@
         let trees = [];
         let fishes = [];
         let timerInterval;
+        let isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
         function createElement(emoji, className) {
             const element = document.createElement('div');
@@ -174,14 +230,12 @@
             const maxX = GRID_SIZE_X - 1;
             const maxY = GRID_SIZE_Y - 1;
             
-            // Ensure walls stay within grid bounds
             const actualLength = Math.min(length, vertical ? maxY - startY : maxX - startX);
             
             for(let i = 0; i < actualLength; i++) {
                 const x = vertical ? startX : startX + i;
                 const y = vertical ? startY + i : startY;
                 
-                // Skip creation if position is out of bounds
                 if(x > maxX || y > maxY) continue;
                 
                 const tree = createElement('🌳', 'tree');
@@ -197,10 +251,9 @@
             bombs = [];
             trees = [];
 
-            // Create contained tree walls
-            createTreeWall(3, 2, 5, true);    // Vertical wall (5 cells tall)
-            createTreeWall(5, 4, 4, false);   // Horizontal wall (4 cells wide)
-            createTreeWall(8, 3, 3, true);    // Vertical wall (3 cells tall)
+            createTreeWall(3, 2, 5, true);
+            createTreeWall(5, 4, 4, false);
+            createTreeWall(8, 3, 3, true);
 
             for(let i = 0; i < 7; i++) {
                 const tree = createElement('🌳', 'tree');
@@ -240,23 +293,13 @@
                 let validPosition = false;
                 let x, y;
 
-                // Retry until valid position found
                 while(!validPosition) {
                     x = Math.floor(Math.random() * GRID_SIZE_X);
                     y = Math.floor(Math.random() * GRID_SIZE_Y);
                     
-                    // Check if position is accessible
                     validPosition = !checkCollision(x, y) && 
                                 !isPositionSurrounded(x, y);
                 }
-
-                do {
-                    x = Math.floor(Math.random() * GRID_SIZE_X);
-                    y = Math.floor(Math.random() * GRID_SIZE_Y);
-                } while((x === 0 && y === 0) || 
-                       bombs.some(b => b.x === x && b.y === y) || 
-                       trees.some(t => t.x === x && t.y === y) ||
-                       fishes.some(f => f.x === x && f.y === y));
                 
                 positionElement(fish, x, y);
                 gameArea.appendChild(fish);
@@ -265,7 +308,6 @@
         }
 
         function isPositionSurrounded(x, y) {
-            // Check all adjacent cells
             const directions = [
                 [x+1, y], [x-1, y],
                 [x, y+1], [x, y-1]
@@ -287,6 +329,12 @@
 
         function moveCat(dx, dy) {
             if (!gameActive) return;
+
+            // Smoother movement for touch devices
+            if(isTouchDevice) {
+                dx = dx * 0.8;
+                dy = dy * 0.8;
+            }
 
             const newX = Math.max(0, Math.min(GRID_SIZE_X - 1, catPosition.x + dx));
             const newY = Math.max(0, Math.min(GRID_SIZE_Y - 1, catPosition.y + dy));
@@ -320,6 +368,35 @@
 
             catPosition = { x: newX, y: newY };
             positionElement(cat, catPosition.x, catPosition.y);
+        }
+
+        function setupTouchControls() {
+            const touchUp = document.getElementById('touch-up');
+            const touchLeft = document.getElementById('touch-left');
+            const touchDown = document.getElementById('touch-down');
+            const touchRight = document.getElementById('touch-right');
+
+            touchUp.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                moveCat(0, -1);
+            });
+            touchLeft.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                moveCat(-1, 0);
+            });
+            touchDown.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                moveCat(0, 1);
+            });
+            touchRight.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                moveCat(1, 0);
+            });
+
+            // Prevent context menu on long press
+            [touchUp, touchLeft, touchDown, touchRight].forEach(btn => {
+                btn.addEventListener('contextmenu', (e) => e.preventDefault());
+            });
         }
 
         function endGame(success) {
@@ -369,8 +446,11 @@
         createObstacles();
         createFish();
 
+        // Initialize controls
         document.getElementById('startBtn').addEventListener('click', initializeGame);
+        setupTouchControls();
 
+        // Keyboard controls
         document.addEventListener('keydown', (e) => {
             if(!gameActive) return;
             
@@ -385,6 +465,11 @@
                 case 'ArrowRight': moveCat(1, 0); break;
             }
         });
+
+        // Prevent zooming on mobile
+        document.addEventListener('touchmove', function(e) {
+            if(e.scale !== 1) { e.preventDefault(); }
+        }, { passive: false });
     </script>
 </body>
 </html>
