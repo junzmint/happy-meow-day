@@ -31,3 +31,7 @@ An interactive HTML/CSS/JavaScript birthday card with a playful cat-themed mini-
 - Fork and PR welcome! Add power-ups, new levels, or sound effects.
 
 *Made with 😻 and 🎂*
+
+---
+
+🔮 **Note**: This project was initially generated with assistance from [DeepSeek](https://deepseek.com) AI, then customized and enhanced with love!
