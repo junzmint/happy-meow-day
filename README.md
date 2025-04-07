@@ -65,9 +65,9 @@ const MAX_LIVES = 5;
 
 ### Suggestions and improvements welcome! Potential enhancements:
 - 🔊 Add sound effects/music
-- 🏆 High score system
-- 🎚️ Difficulty levels
-- ✨ New power-ups/collectibles
+- 🏆 High score system (Use a JSON or TXT file)
+- 🎚️ Difficulty levels (Change time, obstacles, bomb, ...)
+- ✨ New power-ups/collectibles (Plus more time, jump through the tree, eat all the fish nearby, ...)
 
 ### How to contribute ?
 1. Fork the repository
@@ -77,4 +77,4 @@ const MAX_LIVES = 5;
 5. Open a Pull Request
 
 ## 🔮 Note
-This project was initially generated with assistance from [DeepSeek](https://deepseek.com) AI for discovering the power of this new AI model, then customized and enhanced with love! I did nothing, just prompt and prompt for the new feature. Of course the code look like a mess but you can arrange it, i just want to find out how strong this AI model.
+This project was initially generated with assistance from [DeepSeek](https://deepseek.com) AI for discovering the power of this new AI model, then customized and enhanced with love! I did nothing, just prompt and prompt for the new feature. Of course the code look like a mess but you can arrange it as you want, i just want to find out how strong this AI model is in the term of UIUX design.
