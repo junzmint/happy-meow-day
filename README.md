@@ -77,4 +77,4 @@ const MAX_LIVES = 5;
 5. Open a Pull Request
 
 ## 🔮 Note
-This project was initially generated with assistance from [DeepSeek](https://deepseek.com) AI for discovering the power of this new AI model, then customized and enhanced with love! I did nothing, just prompting for about 30 minutes.
+This project was initially generated with assistance from [DeepSeek](https://deepseek.com) AI for discovering the power of this new AI model, then customized and enhanced with love! I did nothing, just prompt and prompt for the new feature. Of course the code look like a mess but you can arrange it, i just want to find out how strong this AI model.
