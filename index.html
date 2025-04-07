@@ -318,6 +318,76 @@
             transform: scale(1.5);
             opacity: 0;
         }
+
+        /* Rules popup styles */
+        .rules-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 228, 225, 0.95);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1001;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .rules-content {
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+            max-width: 400px;
+            width: 90%;
+            animation: slideIn 0.5s;
+            position: relative;
+        }
+
+        .rules-content h2 {
+            color: #ff69b4;
+            text-align: center;
+            margin-top: 0;
+        }
+
+        .rules-list {
+            padding-left: 20px;
+        }
+
+        .rules-list li {
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .rules-emoji {
+            font-size: 20px;
+            margin-right: 8px;
+        }
+
+        .close-rules {
+            background: #ff69b4;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            display: block;
+            margin: 20px auto 0;
+            transition: all 0.3s;
+        }
+
+        .close-rules:hover {
+            background: #ff1493;
+            transform: scale(1.05);
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
     </style>
 </head>
 <body>
@@ -327,6 +397,22 @@
             <p>What's your name, birthday star?</p>
             <input type="text" id="userName" placeholder="Type your name..." maxlength="20" autofocus>
             <button id="submitName">Let's Play!</button>
+        </div>
+    </div>
+
+    <!-- New rules popup -->
+    <div class="rules-popup" id="rulesPopup">
+        <div class="rules-content">
+            <h2>🐱 Game Rules 🎮</h2>
+            <ul class="rules-list">
+                <li><span class="rules-emoji">😸</span> Move your cat with arrow keys or on-screen buttons</li>
+                <li><span class="rules-emoji">🐟</span> Collect fish for +50 points each</li>
+                <li><span class="rules-emoji">💣</span> Avoid bombs! They halve your score and cost 1 life</li>
+                <li><span class="rules-emoji">❤️</span> You have 5 lives - lose them all and game over!</li>
+                <li><span class="rules-emoji">⏱️</span> Complete before time runs out!</li>
+                <li><span class="rules-emoji">🌳</span> Trees block your path - go around them</li>
+            </ul>
+            <button class="close-rules" id="closeRules">Let's Play! 🎉</button>
         </div>
     </div>
 
@@ -378,6 +464,8 @@
         const userNameInput = document.getElementById('userName');
         const submitNameBtn = document.getElementById('submitName');
         const birthdayHeading = document.getElementById('birthdayHeading');
+        const rulesPopup = document.getElementById('rulesPopup');
+        const closeRulesBtn = document.getElementById('closeRules');
 
         // Show popup when page loads
         window.addEventListener('load', () => {
@@ -395,6 +483,7 @@
                 
                 // Hide the popup
                 namePopup.style.display = 'none';
+                rulesPopup.style.display = 'flex';
                 
                 // Store the name in localStorage so it persists
                 localStorage.setItem('birthdayPlayerName', name);
@@ -411,6 +500,12 @@
             if (e.key === 'Enter') {
                 handleNameSubmit();
             }
+        });
+
+        // Close rules and start game
+        closeRulesBtn.addEventListener('click', () => {
+            rulesPopup.style.display = 'none';
+            initializeGame(); // Start the actual game
         });
 
         // Check if we already have a name stored
