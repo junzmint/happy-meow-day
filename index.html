@@ -300,6 +300,24 @@
             50% { transform: scale(1.5); }
             100% { transform: scale(1); }
         }
+
+        /* Add life counter style */
+        .life-counter {
+            display: inline-block;
+            margin-left: 10px;
+        }
+        
+        .life {
+            display: inline-block;
+            font-size: 20px;
+            margin: 0 2px;
+            transition: all 0.3s;
+        }
+        
+        .life-lost {
+            transform: scale(1.5);
+            opacity: 0;
+        }
     </style>
 </head>
 <body>
@@ -317,7 +335,8 @@
     <div class="game-ui">
         <div class="score-board">
             Score: <span id="score">0</span> | 
-            Time: <span id="timer">60</span>s
+            Time: <span id="timer">60</span>s |
+            Lives: <span class="life-counter" id="lives">❤️❤️❤️❤️❤️</span>
         </div>
         <div class="controls">
             <button id="startBtn">Start Game! 🎮</button>
@@ -349,6 +368,10 @@
         let fishes = [];
         let timerInterval;
         let gameArea = document.getElementById('gameArea');
+
+        // Add lives to game state
+        const MAX_LIVES = 5;
+        let lives = MAX_LIVES;
 
         // Name popup functionality
         const namePopup = document.getElementById('namePopup');
@@ -527,15 +550,27 @@
                     cat.innerHTML = '😸';
                     cat.classList.remove('cat-hurt');
                 }, 500);
+
+                // Deduct a life
+                lives--;
+                updateLifeDisplay();
                 
+                // Halve the score (existing rule)
                 score = Math.max(0, Math.floor(score / 2));
                 document.getElementById('score').textContent = score;
                 
+                // Remove the bomb and create new one
                 const bombIndex = bombs.findIndex(b => b.x === newX && b.y === newY);
                 if(bombIndex > -1) {
                     bombs[bombIndex].element.remove();
                     bombs.splice(bombIndex, 1);
                     createBomb();
+                }
+
+                // Check if game over
+                if (lives <= 0) {
+                    endGame(false);
+                    return;
                 }
             }
 
@@ -562,21 +597,45 @@
             positionElement(cat, catPosition.x, catPosition.y);
         }
 
+        // New function to update life display
+        function updateLifeDisplay() {
+            const livesContainer = document.getElementById('lives');
+            livesContainer.innerHTML = '';
+            
+            for (let i = 0; i < MAX_LIVES; i++) {
+                const life = document.createElement('span');
+                life.className = 'life';
+                life.textContent = i < lives ? '❤️' : '🖤';
+                
+                if (i === lives) { // This is the life we just lost
+                    life.classList.add('life-lost');
+                    setTimeout(() => {
+                        life.textContent = '🖤';
+                        life.classList.remove('life-lost');
+                    }, 300);
+                }
+                
+                livesContainer.appendChild(life);
+            }
+        }
+
         function endGame(success) {
             gameActive = false;
             clearInterval(timerInterval);
             document.getElementById('cardBtn').style.display = 'inline-block';
             alert(success ? 
-                `🎉 Birthday Success! Final Score: ${score}` : 
-                `💥 Game Over! Happy Birthday! Final Score: ${score} 🎂`);
+                `🎉 You survived with ${lives} lives left! Final Score: ${score}` : 
+                `💥 Game Over! You ran out of lives! Final Score: ${score} 🎂`);
         }
 
         function resetGame() {
             score = 0;
             timeLeft = 60;
+            lives = MAX_LIVES;
             catPosition = { x: 0, y: 0 };
             document.getElementById('score').textContent = '0';
             document.getElementById('timer').textContent = '60';
+            document.getElementById('lives').innerHTML = '❤️'.repeat(MAX_LIVES);
             document.getElementById('cardBtn').style.display = 'none';
             
             positionElement(cat, 0, 0);
