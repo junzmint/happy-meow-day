@@ -388,6 +388,106 @@
             from { transform: translateY(50px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
+
+        /* Game End Popup Styles */
+        .game-end-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 192, 203, 0.95);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1002;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .game-end-content {
+            background: white;
+            padding: 25px;
+            border-radius: 25px;
+            text-align: center;
+            box-shadow: 0 0 25px rgba(0,0,0,0.2);
+            max-width: 400px;
+            width: 90%;
+            animation: bounceIn 0.6s;
+        }
+
+        .game-end-content h2 {
+            color: #ff69b4;
+            margin-top: 0;
+            font-size: 28px;
+        }
+
+        .game-end-content p {
+            font-size: 18px;
+            margin: 15px 0;
+        }
+
+        .final-score {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff69b4;
+            margin: 20px 0;
+        }
+
+        .game-end-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .game-end-btn {
+            padding: 12px 25px;
+            border-radius: 15px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+
+        .play-again-btn {
+            background: #ff69b4;
+            color: white;
+        }
+
+        .play-again-btn:hover {
+            background: #ff1493;
+            transform: scale(1.05);
+        }
+
+        .view-card-btn {
+            background: white;
+            color: #ff69b4;
+            border: 2px solid #ff69b4;
+        }
+
+        .view-card-btn:hover {
+            background: #fff0f5;
+            transform: scale(1.05);
+        }
+
+        @keyframes confetti {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+        }
+
+        .confetti {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background: #ff69b4;
+            opacity: 0;
+        }
+
+        /* Add this if you want different colored confetti */
+        .confetti:nth-child(3n) { background: #ffb6c1; }
+        .confetti:nth-child(3n+1) { background: #ff69b4; }
+        .confetti:nth-child(3n+2) { background: #ff1493; }
     </style>
 </head>
 <body>
@@ -413,6 +513,21 @@
                 <li><span class="rules-emoji">🌳</span> Trees block your path - go around them</li>
             </ul>
             <button class="close-rules" id="closeRules">Let's Play! 🎉</button>
+        </div>
+    </div>
+
+    <!-- New Game End Popup -->
+    <div class="game-end-popup" id="gameEndPopup">
+        <div class="game-end-content">
+            <h2 id="endMessage">🎉 Birthday Success! 🎉</h2>
+            <p id="endDetails">You completed the game with time remaining!</p>
+            <div class="final-score">
+                Final Score: <span id="finalScore">0</span>
+            </div>
+            <div class="game-end-buttons">
+                <button class="game-end-btn play-again-btn" id="playAgainBtn">Play Again! 🎮</button>
+                <button class="game-end-btn view-card-btn" id="viewCardBtn">Birthday Card 🎂</button>
+            </div>
         </div>
     </div>
 
@@ -717,11 +832,56 @@
         function endGame(success) {
             gameActive = false;
             clearInterval(timerInterval);
-            document.getElementById('cardBtn').style.display = 'inline-block';
-            alert(success ? 
-                `🎉 You survived with ${lives} lives left! Final Score: ${score}` : 
-                `💥 Game Over! You ran out of lives! Final Score: ${score} 🎂`);
+            
+            // Update end popup content
+            const endMessage = document.getElementById('endMessage');
+            const endDetails = document.getElementById('endDetails');
+            const finalScore = document.getElementById('finalScore');
+            
+            finalScore.textContent = score;
+            
+            if (success) {
+                endMessage.innerHTML = '🎉 Birthday Success! 🎉';
+                endDetails.textContent = lives > 0 
+                    ? `You completed the game with ${lives} ${lives === 1 ? 'life' : 'lives'} remaining!` 
+                    : 'You completed the game just in time!';
+                createConfetti();
+            } else {
+                endMessage.innerHTML = '💖 Game Over! 💖';
+                endDetails.textContent = 'You ran out of lives! Happy Birthday anyway!';
+            }
+            
+            // Show the beautiful end popup
+            document.getElementById('gameEndPopup').style.display = 'flex';
         }
+
+        // Confetti effect for success
+        function createConfetti() {
+            const colors = ['#ff69b4', '#ffb6c1', '#ff1493', '#ff85a2', '#ff9eb5'];
+            const container = document.getElementById('gameEndPopup');
+            
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.top = Math.random() * 100 + '%';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                confetti.style.animation = `confetti ${Math.random() * 3 + 2}s forwards`;
+                container.appendChild(confetti);
+            }
+        }
+
+        // Play Again button
+        document.getElementById('playAgainBtn').addEventListener('click', () => {
+            document.getElementById('gameEndPopup').style.display = 'none';
+            resetGame();
+        });
+
+        // View Card button
+        document.getElementById('viewCardBtn').addEventListener('click', () => {
+            window.location.href = 'birthday-card.html';
+        });
 
         function resetGame() {
             score = 0;
