@@ -34,4 +34,4 @@ An interactive HTML/CSS/JavaScript birthday card with a playful cat-themed mini-
 
 ---
 
-🔮 **Note**: This project was initially generated with assistance from [DeepSeek](https://deepseek.com) AI, then customized and enhanced with love!
+🔮 **Note**: This project was initially generated with assistance from [DeepSeek](https://deepseek.com) AI for discover the power of this new AI model, then customized and enhanced with love! I did nothing, just prompt for about 30 minutes.
