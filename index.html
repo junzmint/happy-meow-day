@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Cat Birthday Adventure!</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
         body {
             background: #fff0f5;
@@ -12,46 +13,57 @@
             align-items: center;
             font-family: 'Comic Sans MS', cursive;
             overflow-y: auto;
-            padding: 20px;
+            padding: 10px;
+            touch-action: manipulation;
+            -webkit-text-size-adjust: 100%;
         }
 
         h1 {
             text-align: center;
-            margin: 20px 0 10px;
+            margin: 10px 0;
+            font-size: clamp(18px, 4vw, 28px);
+            padding: 0 10px;
         }
 
         .game-ui {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 15px;
-            margin-bottom: 20px;
+            gap: 10px;
+            margin-bottom: 10px;
             width: 100%;
             max-width: 780px;
         }
 
         .score-board {
             background: white;
-            padding: 10px 20px;
+            padding: 8px 16px;
             border-radius: 10px;
-            font-size: 18px;
+            font-size: clamp(14px, 4vw, 18px);
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 90%;
         }
 
         .controls {
             display: flex;
-            gap: 15px;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            width: 90%;
         }
 
         button {
-            padding: 12px 24px;
+            padding: 10px 20px;
             background: #ff69b4;
             color: white;
             border: none;
             border-radius: 15px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: clamp(14px, 4vw, 16px);
             transition: transform 0.3s;
+            flex: 1;
+            min-width: 120px;
         }
 
         button:hover {
@@ -60,25 +72,28 @@
         }
 
         .game-container {
-            width: 780px;
-            max-width: 95%;
-            height: 600px;
+            width: 100%;
+            max-width: 780px;
+            height: 60vh;
+            min-height: 300px;
+            max-height: 500px;
             position: relative;
             background: #e0f7fa;
             border-radius: 15px;
             margin: 0 auto;
-            overflow: visible;
+            overflow: hidden;
             display: none;
         }
 
         .cell {
             position: absolute;
-            font-size: 40px;
-            width: 60px;
-            height: 60px;
+            font-size: clamp(20px, 6vw, 40px);
+            width: calc(100% / 13);
+            height: calc(100% / 10);
             display: flex;
             align-items: center;
             justify-content: center;
+            transform: translateZ(0); /* Force hardware acceleration */
         }
 
         #cat {
@@ -98,9 +113,44 @@
 
         .tree {
             color: #2ecc71;
-            font-size: 50px;
             z-index: 1;
         }
+
+        /* Mobile controls */
+        .mobile-controls {
+            display: none;
+            grid-template-areas:
+                ". up ."
+                "left . right"
+                ". down .";
+            gap: 10px;
+            margin: 15px 0;
+            width: 200px;
+        }
+
+        .mobile-btn {
+            background: rgba(255, 105, 180, 0.7);
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
+
+        .mobile-btn:active {
+            background: #ff1493;
+            transform: scale(0.95);
+        }
+
+        #upBtn { grid-area: up; }
+        #leftBtn { grid-area: left; }
+        #rightBtn { grid-area: right; }
+        #downBtn { grid-area: down; }
 
         @keyframes float {
             0%, 100% { transform: translateY(0); }
@@ -113,22 +163,29 @@
         }
 
         @media (max-width: 800px) {
+            .mobile-controls {
+                display: grid;
+            }
             .game-container {
-                height: 500px;
+                height: 55vh;
             }
-            .controls {
-                flex-wrap: wrap;
-                justify-content: center;
+        }
+
+        @media (max-width: 500px) {
+            .game-container {
+                height: 50vh;
+                min-height: 250px;
             }
-            button {
-                padding: 10px 20px;
-                font-size: 14px;
+            .mobile-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
             }
         }
     </style>
 </head>
 <body>
-    <h1>Happy Birthday! 😺 Collect Fish, Avoid Bombs! 🎉</h1>
+    <h1>Happy Birthday! 😺 Collect Fish, Avoid Bombs! �</h1>
     
     <div class="game-ui">
         <div class="score-board">
@@ -145,10 +202,17 @@
     
     <div class="game-container" id="gameArea"></div>
 
+    <!-- Mobile controls -->
+    <div class="mobile-controls">
+        <div class="mobile-btn" id="upBtn">↑</div>
+        <div class="mobile-btn" id="leftBtn">←</div>
+        <div class="mobile-btn" id="rightBtn">→</div>
+        <div class="mobile-btn" id="downBtn">↓</div>
+    </div>
+
     <script>
         const GRID_SIZE_X = 13;
         const GRID_SIZE_Y = 10;
-        const CELL_SIZE = 60;
         let score = 0;
         let timeLeft = 60;
         let gameActive = true;
@@ -157,6 +221,7 @@
         let trees = [];
         let fishes = [];
         let timerInterval;
+        let gameArea = document.getElementById('gameArea');
 
         function createElement(emoji, className) {
             const element = document.createElement('div');
@@ -166,22 +231,20 @@
         }
 
         function positionElement(element, x, y) {
-            element.style.left = `${x * CELL_SIZE}px`;
-            element.style.top = `${y * CELL_SIZE}px`;
+            element.style.left = `${(x / GRID_SIZE_X) * 100}%`;
+            element.style.top = `${(y / GRID_SIZE_Y) * 100}%`;
         }
 
         function createTreeWall(startX, startY, length, vertical) {
             const maxX = GRID_SIZE_X - 1;
             const maxY = GRID_SIZE_Y - 1;
             
-            // Ensure walls stay within grid bounds
             const actualLength = Math.min(length, vertical ? maxY - startY : maxX - startX);
             
             for(let i = 0; i < actualLength; i++) {
                 const x = vertical ? startX : startX + i;
                 const y = vertical ? startY + i : startY;
                 
-                // Skip creation if position is out of bounds
                 if(x > maxX || y > maxY) continue;
                 
                 const tree = createElement('🌳', 'tree');
@@ -192,16 +255,20 @@
         }
 
         function createObstacles() {
+            // Clear existing elements
             bombs.forEach(bomb => bomb.element.remove());
             trees.forEach(tree => tree.element.remove());
+            fishes.forEach(fish => fish.element.remove());
             bombs = [];
             trees = [];
+            fishes = [];
 
-            // Create contained tree walls
-            createTreeWall(3, 2, 5, true);    // Vertical wall (5 cells tall)
-            createTreeWall(5, 4, 4, false);   // Horizontal wall (4 cells wide)
-            createTreeWall(8, 3, 3, true);    // Vertical wall (3 cells tall)
+            // Create tree walls
+            createTreeWall(3, 2, 5, true);
+            createTreeWall(5, 4, 4, false);
+            createTreeWall(8, 3, 3, true);
 
+            // Random trees
             for(let i = 0; i < 7; i++) {
                 const tree = createElement('🌳', 'tree');
                 let x, y;
@@ -214,6 +281,7 @@
                 trees.push({element: tree, x, y});
             }
 
+            // Bombs
             for(let i = 0; i < 15; i++) {
                 createBomb();
             }
@@ -237,19 +305,8 @@
         function createFish() {
             while(fishes.length < 3) {
                 const fish = createElement('🐟', 'fish');
-                let validPosition = false;
                 let x, y;
-
-                // Retry until valid position found
-                while(!validPosition) {
-                    x = Math.floor(Math.random() * GRID_SIZE_X);
-                    y = Math.floor(Math.random() * GRID_SIZE_Y);
-                    
-                    // Check if position is accessible
-                    validPosition = !checkCollision(x, y) && 
-                                !isPositionSurrounded(x, y);
-                }
-
+                
                 do {
                     x = Math.floor(Math.random() * GRID_SIZE_X);
                     y = Math.floor(Math.random() * GRID_SIZE_Y);
@@ -262,20 +319,6 @@
                 gameArea.appendChild(fish);
                 fishes.push({element: fish, x, y});
             }
-        }
-
-        function isPositionSurrounded(x, y) {
-            // Check all adjacent cells
-            const directions = [
-                [x+1, y], [x-1, y],
-                [x, y+1], [x, y-1]
-            ];
-            
-            return directions.every(([nx, ny]) => {
-                return checkCollision(nx, ny) || 
-                    nx < 0 || nx >= GRID_SIZE_X ||
-                    ny < 0 || ny >= GRID_SIZE_Y;
-            });
         }
 
         function checkCollision(x, y) {
@@ -357,20 +400,22 @@
         }
 
         function initializeGame() {
-            document.querySelector('.game-container').style.display = 'block';
+            gameArea.style.display = 'block';
             document.getElementById('startBtn').textContent = 'Play Again! 🎮';
             resetGame();
         }
 
-        const gameArea = document.getElementById('gameArea');
+        // Initialize game elements
         const cat = createElement('😸', 'cat');
         gameArea.appendChild(cat);
         positionElement(cat, 0, 0);
         createObstacles();
         createFish();
 
+        // Event listeners
         document.getElementById('startBtn').addEventListener('click', initializeGame);
 
+        // Keyboard controls
         document.addEventListener('keydown', (e) => {
             if(!gameActive) return;
             
@@ -384,6 +429,39 @@
                 case 'ArrowLeft': moveCat(-1, 0); break;
                 case 'ArrowRight': moveCat(1, 0); break;
             }
+        });
+
+        // Mobile touch controls
+        document.getElementById('upBtn').addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            moveCat(0, -1);
+        });
+        document.getElementById('downBtn').addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            moveCat(0, 1);
+        });
+        document.getElementById('leftBtn').addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            moveCat(-1, 0);
+        });
+        document.getElementById('rightBtn').addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            moveCat(1, 0);
+        });
+
+        // Click fallback
+        document.getElementById('upBtn').addEventListener('click', () => moveCat(0, -1));
+        document.getElementById('downBtn').addEventListener('click', () => moveCat(0, 1));
+        document.getElementById('leftBtn').addEventListener('click', () => moveCat(-1, 0));
+        document.getElementById('rightBtn').addEventListener('click', () => moveCat(1, 0));
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            // Reposition all elements when screen size changes
+            positionElement(cat, catPosition.x, catPosition.y);
+            bombs.forEach(bomb => positionElement(bomb.element, bomb.x, bomb.y));
+            trees.forEach(tree => positionElement(tree.element, tree.x, tree.y));
+            fishes.forEach(fish => positionElement(fish.element, fish.x, fish.y));
         });
     </script>
 </body>
