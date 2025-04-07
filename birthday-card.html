@@ -11,65 +11,149 @@
     <meta name="msapplication-TileColor" content="#ff69b4">
     <meta name="msapplication-config" content="image/favicon/browserconfig.xml">
     <meta name="theme-color" content="#ffffff">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <title>Happy Birthday!</title>
     <style>
+        :root {
+            --pink: #ff69b4;
+            --hotpink: #ff1493;
+            --lightpink: #ffb6c1;
+            --yellow: #fffacd;
+            --blue: #add8e6;
+            --purple: #e6e6fa;
+        }
+        
         body {
-            background: linear-gradient(45deg, #ffb6c1, #fffacd);
+            background: linear-gradient(135deg, var(--lightpink), var(--yellow), var(--blue), var(--purple));
+            background-size: 400% 400%;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            font-family: 'Comic Sans MS', cursive;
-            overflow-y: auto;
-            padding: 20px;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            overflow: hidden;
+            animation: gradientBG 15s ease infinite;
+            will-change: background-position;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         .card {
-            background: white;
+            background: rgba(255, 255, 255, 0.9);
             padding: 2rem;
             border-radius: 20px;
-            box-shadow: 0 0 30px rgba(255,105,180,0.3);
+            box-shadow: 0 0 30px rgba(255,105,180,0.5);
             text-align: center;
             max-width: 500px;
-            width: 95%;
+            width: 90%;
             margin: 20px;
             position: relative;
+            backdrop-filter: blur(5px);
+            border: 3px dashed var(--pink);
+            animation: pulse 2s infinite alternate;
+            overflow: hidden;
+            will-change: transform, box-shadow;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 30px rgba(255,105,180,0.5); }
+            100% { transform: scale(1.02); box-shadow: 0 0 50px rgba(255,105,180,0.8); }
+        }
+
+        h1 {
+            color: var(--hotpink);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            animation: colorChange 5s infinite alternate;
+            will-change: color;
+        }
+
+        @keyframes colorChange {
+            0% { color: var(--hotpink); }
+            25% { color: #ff8c00; }
+            50% { color: #4b0082; }
+            75% { color: #006400; }
+            100% { color: #00008b; }
         }
 
         .cat-animation {
             font-size: 8rem;
-            margin: 2rem 0;
-            animation: bounce 1s infinite;
+            margin: 1rem 0;
+            display: inline-block;
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.2s ease-out;
+            will-change: transform;
+            animation: bounce 0.8s infinite alternate, rotate 4s infinite linear;
+            transform-origin: center;
+        }
+
+        .cat-animation:active {
+            transform: scale(0.9);
+        }
+
+        @keyframes bounce {
+            0% { transform: translateY(0) scale(1); }
+            100% { transform: translateY(-20px) scale(1.1); }
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(-5deg); }
+            50% { transform: rotate(5deg); }
+            100% { transform: rotate(-5deg); }
         }
 
         .message {
             font-size: 1.5rem;
-            color: #666;
-            margin: 2rem 0;
+            color: #555;
+            margin: 1.5rem 0;
+            line-height: 1.6;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 1rem;
+            border-radius: 15px;
+            border-left: 5px solid var(--pink);
+        }
+
+        .click-note {
+            font-size: 1rem;
+            color: var(--hotpink);
+            margin-top: 1rem;
+            font-style: italic;
+            animation: fadeInOut 2s infinite alternate;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0.6; }
+            100% { opacity: 1; }
         }
 
         button {
-            background: #ff69b4;
+            background: linear-gradient(45deg, var(--pink), var(--hotpink));
             color: white;
             border: none;
             padding: 15px 30px;
             border-radius: 25px;
             font-size: 1.2rem;
             cursor: pointer;
-            transition: transform 0.3s;
+            transition: all 0.3s;
             margin-top: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            will-change: transform;
         }
 
         button:hover {
-            transform: scale(1.1);
-            background: #ff1493;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
         }
 
         .confetti {
@@ -79,61 +163,148 @@
             width: 100%;
             height: 100%;
             pointer-events: none;
+            z-index: -1;
         }
 
         .confetti span {
             position: absolute;
-            animation: confetti-fall 3s infinite;
+            animation: confetti-fall linear forwards;
             font-size: 1.5rem;
+            opacity: 0;
+            will-change: transform, opacity;
         }
 
         @keyframes confetti-fall {
-            0% { transform: translateY(-100%) rotate(0deg); }
-            100% { transform: translateY(100vh) rotate(360deg); }
+            0% { 
+                transform: translateY(-100px) rotate(0deg) scale(0.5); 
+                opacity: 0;
+            }
+            10% { opacity: 1; }
+            100% { 
+                transform: translateY(100vh) rotate(360deg) scale(1); 
+                opacity: 0;
+            }
         }
 
         @media (max-width: 600px) {
             .card {
                 padding: 1.5rem;
+                width: 85%;
+            }
+            h1 {
+                font-size: 2rem;
             }
             .cat-animation {
-                font-size: 6rem;
+                font-size: 5rem;
             }
             .message {
                 font-size: 1.2rem;
+                padding: 0.8rem;
             }
             button {
                 padding: 12px 24px;
-                font-size: 16px;
+                font-size: 1rem;
             }
         }
     </style>
 </head>
 <body>
     <div class="card">
-        <div class="confetti">
-            <span style="left:10%">🎉</span>
-            <span style="left:30%">✨</span>
-            <span style="left:50%">🎊</span>
-            <span style="left:70%">🌟</span>
-            <span style="left:90%">💫</span>
-        </div>
+        <div class="confetti" id="confetti-container"></div>
 
-        <div class="cat-animation">😻</div>
+        <div class="cat-animation" id="cat-icon">😻</div>
         <h1>Happy Birthday! 🎂</h1>
         
         <div class="message">
             Wishing you a day filled with:<br>
-            😻 Purr-fect moments<br>
-            🐟 Tasty treats<br>
-            🧶 Endless fun<br>
-            🛌 Cozy naps<br>
-            🐾 And lots of love!
+            <span style="color: var(--hotpink);">😻 Purr-fect moments</span><br>
+            <span style="color: #ff8c00;">🐟 Tasty treats</span><br>
+            <span style="color: #4b0082;">🧶 Endless fun</span><br>
+            <span style="color: #006400;">🛌 Cozy naps</span><br>
+            <span style="color: #00008b;">🐾 And lots of love!</span>
         </div>
+
+        <div class="click-note">Click on the cat to see different emotions!</div>
 
         <button onclick="window.location.href='index.html'">
             Play Again! 🎮
         </button>
     </div>
+
+    <script>
+        // Optimized animation performance
+        document.addEventListener('DOMContentLoaded', function() {
+            const confettiContainer = document.getElementById('confetti-container');
+            const catIcon = document.getElementById('cat-icon');
+            const emojis = ['🎉', '✨', '🎊', '🌟', '💫', '🎈', '🎁', '🍰', '🥳', '🎂'];
+            const catEmotions = ['😻', '😺', '😸', '😹', '😼', '😽', '🙀', '😿', '😾', '🐱'];
+            
+            // Current emotion index
+            let currentEmotion = 0;
+            
+            // Click handler for cat icon
+            catIcon.addEventListener('click', function() {
+                // Add temporary scale effect
+                this.style.transform = 'scale(0.8)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 200);
+                
+                // Change to next emotion
+                currentEmotion = (currentEmotion + 1) % catEmotions.length;
+                this.textContent = catEmotions[currentEmotion];
+                
+                // Create a burst of confetti
+                createConfettiBurst(5);
+            });
+            
+            // Create a small burst of confetti
+            function createConfettiBurst(count) {
+                for (let i = 0; i < count; i++) {
+                    const confetti = document.createElement('span');
+                    confetti.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                    confetti.style.left = (Math.random() * 80 + 10) + '%';
+                    confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                    confetti.style.animationDelay = (Math.random() * 0.5) + 's';
+                    confettiContainer.appendChild(confetti);
+                    
+                    // Remove confetti after animation completes
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 5000);
+                }
+            }
+            
+            // Initial confetti creation
+            function createInitialConfetti() {
+                for (let i = 0; i < 20; i++) {
+                    setTimeout(() => {
+                        const confetti = document.createElement('span');
+                        confetti.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                        confetti.style.left = Math.random() * 100 + '%';
+                        confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                        confetti.style.animationDelay = (Math.random() * 2) + 's';
+                        confettiContainer.appendChild(confetti);
+                        
+                        setTimeout(() => {
+                            confetti.remove();
+                        }, 5000);
+                    }, i * 150);
+                }
+            }
+            
+            // Start initial animations
+            createInitialConfetti();
+            
+            // Use requestAnimationFrame for smoother animations
+            let lastTime = 0;
+            function animate(time) {
+                const deltaTime = time - lastTime;
+                lastTime = time;
+                requestAnimationFrame(animate);
+            }
+            requestAnimationFrame(animate);
+        });
+    </script>
 </body>
 </html>
