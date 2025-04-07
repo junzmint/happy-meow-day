@@ -182,10 +182,111 @@
                 font-size: 20px;
             }
         }
+
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 192, 203, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .popup-content {
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 300px; /* Smaller max-width for phones */
+            animation: bounceIn 0.5s;
+            position: relative;
+            margin: 10px;
+        }
+
+        .popup-content h2 {
+            color: #ff69b4;
+            margin: 10px 0;
+            font-size: clamp(18px, 5vw, 24px); /* Responsive font size */
+        }
+
+        .popup-content input {
+            width: calc(100% - 30px); /* Full width minus padding */
+            padding: 10px;
+            margin: 10px 0;
+            border: 2px solid #ffb6c1;
+            border-radius: 10px;
+            font-size: clamp(14px, 4vw, 16px); /* Responsive font size */
+            text-align: center;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        .popup-content button {
+            background: #ff69b4;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: clamp(14px, 4vw, 16px); /* Responsive font size */
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            max-width: 200px;
+            margin-top: 10px;
+        }
+
+        .popup-content button:hover {
+            background: #ff1493;
+            transform: scale(1.05);
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            70% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(1); }
+        }
+
+        .birthday-name {
+            color: #ff69b4;
+            text-decoration: underline;
+            animation: pulse 2s infinite;
+            display: inline-block; /* Better for mobile */
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        #birthdayHeading {
+            font-size: clamp(18px, 5vw, 28px);
+            padding: 0 10px;
+            text-align: center;
+            margin: 10px 0;
+            line-height: 1.3;
+        }
     </style>
 </head>
 <body>
-    <h1>Happy Birthday! 😺 Collect Fish, Avoid Bombs! �</h1>
+    <div class="popup-overlay" id="namePopup">
+        <div class="popup-content">
+            <h2>🎂 Birthday Adventure! 🎂</h2>
+            <p>What's your name, birthday star?</p>
+            <input type="text" id="userName" placeholder="Type your name..." maxlength="20" autofocus>
+            <button id="submitName">Let's Play!</button>
+        </div>
+    </div>
+
+    <h1 id="birthdayHeading">Happy Birthday! 😺 Collect Fish, Avoid Bombs! 🎉</h1>
     
     <div class="game-ui">
         <div class="score-board">
@@ -222,6 +323,60 @@
         let fishes = [];
         let timerInterval;
         let gameArea = document.getElementById('gameArea');
+
+        // Name popup functionality
+        const namePopup = document.getElementById('namePopup');
+        const userNameInput = document.getElementById('userName');
+        const submitNameBtn = document.getElementById('submitName');
+        const birthdayHeading = document.getElementById('birthdayHeading');
+
+        // Show popup when page loads
+        window.addEventListener('load', () => {
+            namePopup.style.display = 'flex';
+            // Focus on input after a small delay (helps with mobile)
+            setTimeout(() => userNameInput.focus(), 100);
+        });
+
+        // Handle name submission
+        function handleNameSubmit() {
+            const name = userNameInput.value.trim();
+            if (name) {
+                // Update the heading with the user's name
+                birthdayHeading.innerHTML = `Happy Birthday, <span class="birthday-name">${name}</span>! 😺 Collect Fish, Avoid Bombs! 🎉`;
+                
+                // Hide the popup
+                namePopup.style.display = 'none';
+                
+                // Store the name in localStorage so it persists
+                localStorage.setItem('birthdayPlayerName', name);
+            } else {
+                alert("Please enter your name to continue!");
+                userNameInput.focus();
+            }
+        }
+
+        submitNameBtn.addEventListener('click', handleNameSubmit);
+
+        // Allow pressing Enter to submit
+        userNameInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                handleNameSubmit();
+            }
+        });
+
+        // Check if we already have a name stored
+        const storedName = localStorage.getItem('birthdayPlayerName');
+        if (storedName) {
+            birthdayHeading.innerHTML = `Happy Birthday, <span class="birthday-name">${storedName}</span>! 😺 Collect Fish, Avoid Bombs! 🎉`;
+            namePopup.style.display = 'none';
+        }
+
+        // Make sure the popup stays centered on orientation changes
+        window.addEventListener('resize', () => {
+            if (namePopup.style.display === 'flex') {
+                userNameInput.focus();
+            }
+        });
 
         function createElement(emoji, className) {
             const element = document.createElement('div');
