@@ -1,37 +1,80 @@
 # 🎉 Cat Birthday Adventure 🐱
 
-An interactive HTML/CSS/JavaScript birthday card with a playful cat-themed mini-game! Collect fish, avoid bombs, and unlock a festive greeting card.
+An interactive HTML/CSS/JavaScript birthday card with a playful cat-themed mini-game where players collect fish, avoid bombs, and unlock a festive greeting card.
 
-[![🐱 Play Now](https://img.shields.io/badge/🐱_Play_Now-Live_Demo-2ecc71?style=for-the-badge&logo=github)](https://junzmint.github.io/happy-meow-day/)
+[![Play Now](https://img.shields.io/badge/🐱_Play_Now-Live_Demo-2ecc71?style=for-the-badge&logo=github)](https://junzmint.github.io/happy-meow-day/)
 
-## Features
-- 🕹️ **Mini-Game**: Arrow-key controls to navigate a cat character
-- 🐟 **Collectibles**: Earn points by gathering fish (+50 points)
-- 💣 **Obstacles**: Avoid bombs that halve your score
-- 🎁 **Unlockable**: Game completion reveals a birthday card page
-- 🎨 **Animations**: Floating elements, confetti effects, and cat sprites
-- 📱 **Responsive Design**: Works on desktop and mobile devices
+## ✨ Features
 
-## How to Use
-1. Clone repo: `git clone [repo-url]`
-2. Open `index.html` in browser
-3. Play game (60-second timer)
-4. Unlock birthday card after game ends
+### Gameplay
+- 🕹️ **Mini-Game**: Navigate a cat character using arrow keys or on-screen controls
+- 🐟 **Collectibles**: Gather fish for +50 points each
+- 💣 **Obstacles**: Avoid bombs that halve your score and cost lives
+- ❤️ **Lives System**: 5 lives before game over
+- ⏱️ **Time Challenge**: 60-second countdown timer
 
-## Customize
-- Edit messages in `birthday-card.html`
-- Modify colors in CSS variables
-- Adjust game settings (timer, grid size, spawn rates)
-- Add new animations/emojis
+### Visuals
+- 🎨 **Animations**: 
+  - Floating fish and rotating bombs
+  - Cat reaction sprites (happy/sad faces)
+  - Confetti victory effects
+- 🌳 **Obstacles**: Tree walls that block movement
 
-## Technologies
-- **HTML5** • **CSS3** (Animations/Flexbox/Grid) • **JavaScript**
+### Experience
+- 📱 **Responsive Design**: Works on desktop and mobile
+- 🎁 **Unlockable**: Game completion reveals special birthday card
+- 📛 **Personalized**: Player name input at start
 
-## Contribution  
-- Fork and PR welcome! Add power-ups, new levels, or sound effects.
+## 🚀 How to Play
 
-*Made with 😻 and 🎂*
+1. Enter your name when prompted
+2. Read the game rules
+3. Control the cat using:
+   - **Desktop**: Arrow keys (↑ ↓ ← →)
+   - **Mobile**: On-screen directional buttons
+4. Collect fish while avoiding bombs
+5. Complete before time runs out to unlock the birthday card!
 
----
+## 🛠️ Development
 
-🔮 **Note**: This project was initially generated with assistance from [DeepSeek](https://deepseek.com) AI for discover the power of this new AI model, then customized and enhanced with love! I did nothing, just prompt for about 30 minutes.
+### Setup
+```bash
+git clone https://github.com/junzmint/happy-meow-day.git
+cd happy-meow-day
+```
+
+### Customization
+- Messages: Edit text in birthday-card.html
+- Appearance: Modify colors in CSS variables
+- Gameplay: Adjust settings in script:
+```javascript
+const GRID_SIZE_X = 13;
+const GRID_SIZE_Y = 10;
+let timeLeft = 60;
+const MAX_LIVES = 5;
+```
+
+## 🧰 Technologies
+
+### Frontend
+- HTML5
+- CSS3 (Animations/Flexbox/Grid)
+- Vanilla JavaScript
+
+## 🤝 Contribution
+
+### Suggestions and improvements welcome! Potential enhancements:
+- 🔊 Add sound effects/music
+- 🏆 High score system
+- 🎚️ Difficulty levels
+- ✨ New power-ups/collectibles
+
+### How to contribute ?
+1. Fork the repository
+2. Create your feature branch (git checkout -b feature/amazing-feature)
+3. Commit your changes (git commit -m 'Add amazing feature')
+4. Push to the branch (git push origin feature/amazing-feature)
+5. Open a Pull Request
+
+## 🔮 Note
+This project was initially generated with assistance from [DeepSeek](https://deepseek.com) AI for discovering the power of this new AI model, then customized and enhanced with love! I did nothing, just prompting for about 30 minutes.
