@@ -11,6 +11,7 @@
     <meta name="msapplication-TileColor" content="#ff69b4">
     <meta name="msapplication-config" content="image/favicon/browserconfig.xml">
     <meta name="theme-color" content="#ffffff">
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
     
     <title>Cat Birthday Adventure!</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -27,6 +28,7 @@
             padding: 10px;
             touch-action: manipulation;
             -webkit-text-size-adjust: 100%;
+            font-family: 'Comic Sans MS', 'Comic Neue', cursive, sans-serif;
         }
 
         h1 {
@@ -499,6 +501,16 @@
         .confetti:nth-child(3n) { background: #ffb6c1; }
         .confetti:nth-child(3n+1) { background: #ff69b4; }
         .confetti:nth-child(3n+2) { background: #ff1493; }
+
+        @supports (-webkit-touch-callout: none) {
+            body, button {
+                font-family: 'Comic Neue', -apple-system, sans-serif;
+            }
+            
+            .cell {
+                font-family: "Apple Color Emoji", "Segoe UI Emoji", system-ui;
+            }
+        }
     </style>
 </head>
 <body>
