@@ -36,6 +36,7 @@
             overflow: hidden;
             animation: gradientBG 15s ease infinite;
             will-change: background-position;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
         }
 
         @keyframes gradientBG {
@@ -204,6 +205,16 @@
             button {
                 padding: 12px 24px;
                 font-size: 1rem;
+            }
+        }
+
+        @supports (-webkit-touch-callout: none) {
+            body, button, .message {
+                font-family: -apple-system, BlinkMacSystemFont, 'Comic Neue', sans-serif;
+            }
+            
+            .cat-animation {
+                font-family: "Apple Color Emoji", "Segoe UI Emoji", system-ui, sans-serif;
             }
         }
     </style>
