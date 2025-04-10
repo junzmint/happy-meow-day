@@ -218,9 +218,48 @@
                 font-family: "Apple Color Emoji", "Segoe UI Emoji", system-ui;
             }
         }
+
+        /* Language Switcher Button */
+        .language-switcher {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            z-index: 1000;
+        }
+
+        #toggleLanguageBtn {
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid #ff69b4;
+            border-radius: 50%; /* Làm tròn */
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 0;
+        }
+
+        #toggleLanguageBtn:hover {
+            background: #ff69b4;
+            transform: scale(1.1);
+        }
+
+        #currentLanguageFlag {
+            font-size: 20px;
+            line-height: 1;
+        }
     </style>
 </head>
 <body>
+    <div class="language-switcher">
+        <button id="toggleLanguageBtn">
+            <span id="currentLanguageFlag">🇬🇧</span>
+        </button>
+    </div>
+
     <div class="card">
         <div class="confetti" id="confetti-container"></div>
 
@@ -244,33 +283,72 @@
     </div>
 
     <script>
-        // Optimized animation performance
+        // ========== LANGUAGE SETTINGS ==========
+        const cardTranslations = {
+            en: {
+                title: "Happy Birthday! 🎂",
+                message: `Wishing you a day filled with:<br>
+                    <span style="color: var(--hotpink);">😻 Purr-fect moments</span><br>
+                    <span style="color: #ff8c00;">🐟 Tasty treats</span><br>
+                    <span style="color: #4b0082;">🧶 Endless fun</span><br>
+                    <span style="color: #006400;">🛌 Cozy naps</span><br>
+                    <span style="color: #00008b;">🐾 And lots of love!</span>`,
+                clickNote: "Click on the cat to see different emotions!",
+                playButton: "Play Again! 🎮"
+            },
+            ja: {
+                title: "お誕生日おめでとう! 🎂",
+                message: `素晴らしい一日になりますように:<br>
+                    <span style="color: var(--hotpink);">😻 完璧な瞬間</span><br>
+                    <span style="color: #ff8c00;">🐟 おいしいごちそう</span><br>
+                    <span style="color: #4b0082;">🧶 無限の楽しみ</span><br>
+                    <span style="color: #006400;">🛌 気持ちいいお昼寝</span><br>
+                    <span style="color: #00008b;">🐾 そしてたくさんの愛を!</span>`,
+                clickNote: "猫をクリックして色んな表情を見てね!",
+                playButton: "もう一度遊ぶ! 🎮"
+            }
+        };
+
+        let cardLanguage = sessionStorage.getItem('birthdayLanguage') || 'en';
+
+        function applyCardTranslations() {
+            const lang = cardTranslations[cardLanguage];
+            document.querySelector('h1').textContent = lang.title;
+            document.querySelector('.message').innerHTML = lang.message;
+            document.querySelector('.click-note').textContent = lang.clickNote;
+            document.querySelector('.card button').textContent = lang.playButton;
+            document.getElementById('currentLanguageFlag').textContent = cardLanguage === 'en' ? '🇯🇵' : '🇬🇧';
+        }
+
+        // Language switcher button
+        document.getElementById('toggleLanguageBtn').addEventListener('click', function() {
+            cardLanguage = cardLanguage === 'en' ? 'ja' : 'en';
+            sessionStorage.setItem('birthdayLanguage', cardLanguage);
+            applyCardTranslations();
+        });
+
+        // Cat animation and confetti
         document.addEventListener('DOMContentLoaded', function() {
+            applyCardTranslations();
+            
             const confettiContainer = document.getElementById('confetti-container');
             const catIcon = document.getElementById('cat-icon');
             const emojis = ['🎉', '✨', '🎊', '🌟', '💫', '🎈', '🎁', '🍰', '🥳', '🎂'];
             const catEmotions = ['😻', '😺', '😸', '😹', '😼', '😽', '🙀', '😿', '😾', '🐱'];
             
-            // Current emotion index
             let currentEmotion = 0;
             
-            // Click handler for cat icon
             catIcon.addEventListener('click', function() {
-                // Add temporary scale effect
                 this.style.transform = 'scale(0.8)';
                 setTimeout(() => {
                     this.style.transform = '';
                 }, 200);
                 
-                // Change to next emotion
                 currentEmotion = (currentEmotion + 1) % catEmotions.length;
                 this.textContent = catEmotions[currentEmotion];
-                
-                // Create a burst of confetti
                 createConfettiBurst(5);
             });
             
-            // Create a small burst of confetti
             function createConfettiBurst(count) {
                 for (let i = 0; i < count; i++) {
                     const confetti = document.createElement('span');
@@ -280,14 +358,12 @@
                     confetti.style.animationDelay = (Math.random() * 0.5) + 's';
                     confettiContainer.appendChild(confetti);
                     
-                    // Remove confetti after animation completes
                     setTimeout(() => {
                         confetti.remove();
                     }, 5000);
                 }
             }
             
-            // Initial confetti creation
             function createInitialConfetti() {
                 for (let i = 0; i < 20; i++) {
                     setTimeout(() => {
@@ -305,17 +381,7 @@
                 }
             }
             
-            // Start initial animations
             createInitialConfetti();
-            
-            // Use requestAnimationFrame for smoother animations
-            let lastTime = 0;
-            function animate(time) {
-                const deltaTime = time - lastTime;
-                lastTime = time;
-                requestAnimationFrame(animate);
-            }
-            requestAnimationFrame(animate);
         });
     </script>
 </body>

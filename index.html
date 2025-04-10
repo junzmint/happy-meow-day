@@ -76,7 +76,6 @@
             font-size: clamp(14px, 4vw, 16px);
             transition: transform 0.3s;
             flex: 1;
-            min-width: 120px;
         }
 
         button:hover {
@@ -511,13 +510,89 @@
                 font-family: "Apple Color Emoji", "Segoe UI Emoji", system-ui;
             }
         }
+
+        /* Language Popup Styles */
+        #languagePopup {
+            display: flex;
+            z-index: 2000;
+            background: rgba(255, 228, 225, 0.98);
+        }
+
+        .language-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 25px 0 10px;
+        }
+
+        .language-buttons button {
+            flex: 1;
+            min-width: 120px;
+            padding: 12px;
+            font-size: 16px;
+            background: #ff69b4;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .language-buttons button:hover {
+            background: #ff1493;
+            transform: scale(1.05);
+        }
+
+        /* Language Switcher Button */
+        .language-switcher {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            z-index: 1000;
+        }
+
+        #toggleLanguageBtn {
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid #ff69b4;
+            border-radius: 50%; /* Làm tròn */
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 0;
+        }
+
+        #toggleLanguageBtn:hover {
+            background: #ff69b4;
+            transform: scale(1.1);
+        }
+
+        #currentLanguageFlag {
+            font-size: 20px;
+            line-height: 1;
+        }
     </style>
 </head>
 <body>
+    <!-- Language Selection Popup -->
+    <div class="popup-overlay" id="languagePopup">
+        <div class="popup-content">
+            <h2>🌍 Select Language / 言語を選択</h2>
+            <div class="language-buttons">
+                <button id="englishBtn">English 🇬🇧</button>
+                <button id="japaneseBtn">日本語 🇯🇵</button>
+            </div>
+        </div>
+    </div>
+
     <div class="popup-overlay" id="namePopup">
         <div class="popup-content">
-            <h2>🎂 Birthday Adventure! 🎂</h2>
-            <p>What's your name, birthday star?</p>
+            <h2 id="namePopupTitle">🎂 Birthday Adventure! 🎂</h2>
+            <p id="namePopupText">What's your name, birthday star?</p>
             <input type="text" id="userName" placeholder="Type your name..." maxlength="20" autofocus>
             <button id="submitName">Let's Play!</button>
         </div>
@@ -526,8 +601,8 @@
     <!-- New rules popup -->
     <div class="rules-popup" id="rulesPopup">
         <div class="rules-content">
-            <h2>🐱 Game Rules 🎮</h2>
-            <ul class="rules-list">
+            <h2 id="rulesTitle">🐱 Game Rules 🎮</h2>
+            <ul class="rules-list" id="rulesList">
                 <li><span class="rules-emoji">😸</span> Move your cat with arrow keys or on-screen buttons</li>
                 <li><span class="rules-emoji">🐟</span> Collect fish for +50 points each</li>
                 <li><span class="rules-emoji">💣</span> Avoid bombs! They halve your score and cost 1 life</li>
@@ -548,22 +623,28 @@
                 Final Score: <span id="finalScore">0</span>
             </div>
             <div class="game-end-buttons">
-                <button class="game-end-btn play-again-btn" id="playAgainBtn">Play Again! 🎮</button>
+                <button class="game-end-btn play-again-btn" id="playAgainBtn">Play! 🎮</button>
                 <button class="game-end-btn view-card-btn" id="viewCardBtn">Birthday Card 🎂</button>
             </div>
         </div>
     </div>
 
+    <div class="language-switcher">
+        <button id="toggleLanguageBtn">
+            <span id="currentLanguageFlag">🇬🇧</span>
+        </button>
+    </div>
+
     <h1 id="birthdayHeading">Happy Birthday! 😺 Collect Fish, Avoid Bombs! 🎉</h1>
     
     <div class="game-ui">
-        <div class="score-board">
+        <div class="score-board" id="scoreBoard">
             Score: <span id="score">0</span> | 
             Time: <span id="timer">60</span>s |
             Lives: <span class="life-counter" id="lives">❤️❤️❤️❤️❤️</span>
         </div>
         <div class="controls">
-            <button id="startBtn">Start Game! 🎮</button>
+            <button id="startBtn">Play! 🎮</button>
             <button id="cardBtn" style="display: none;" onclick="window.location.href='birthday-card.html'">
                 Birthday Card 🎂
             </button>
@@ -604,6 +685,151 @@
         const birthdayHeading = document.getElementById('birthdayHeading');
         const rulesPopup = document.getElementById('rulesPopup');
         const closeRulesBtn = document.getElementById('closeRules');
+        
+        // ========== LANGUAGE SETTINGS ==========
+        const translations = {
+            en: {
+                title: "Happy Birthday! 😺 Collect Fish, Avoid Bombs! 🎉",
+                namePopupTitle: "🎂 Birthday Adventure! 🎂",
+                namePopupText: "What's your name, birthday star?",
+                namePlaceholder: "Type your name...",
+                nameSubmitBtn: "Let's Play!",
+                startButton: "Play! 🎮",
+                cardButton: "Birthday Card 🎂",
+                scoreText: "Score: ",
+                timeText: "Time: ",
+                livesText: "Lives: ",
+                rulesTitle: "🐱 Game Rules 🎮",
+                rulesItems: [
+                    "😸 Move your cat with arrow keys or on-screen buttons",
+                    "🐟 Collect fish for +50 points each",
+                    "💣 Avoid bombs! They halve your score and cost 1 life",
+                    "❤️ You have 5 lives - lose them all and game over!",
+                    "⏱️ Complete before time runs out!",
+                    "🌳 Trees block your path - go around them"
+                ],
+                rulesCloseBtn: "Let's Play! 🎉",
+                endMessage: "🎉 Birthday Success! 🎉",
+                endDetails: "You completed the game with time remaining!",
+                playAgain: "Play! 🎮",
+                viewCard: "Birthday Card 🎂"
+            },
+            ja: {
+                title: "お誕生日おめでとう! 😺 魚を集めて、爆弾を避けよう! 🎉",
+                namePopupTitle: "🎂 バースデーアドベンチャー! 🎂",
+                namePopupText: "お名前を教えてください、誕生日のスターさん?",
+                namePlaceholder: "名前を入力...",
+                nameSubmitBtn: "プレイ開始!",
+                startButton: "遊ぶ! 🎮",
+                cardButton: "バースデーカード 🎂",
+                scoreText: "スコア: ",
+                timeText: "時間: ",
+                livesText: "ライフ: ",
+                rulesTitle: "🐱 ゲームルール 🎮",
+                rulesItems: [
+                    "😸 矢印キーまたは画面のボタンで猫を動かします",
+                    "🐟 魚を集めて+50ポイント獲得",
+                    "💣 爆弾を避けて！スコア半減＆ライフ-1",
+                    "❤️ ライフは5つ - 全て失うとゲームオーバー",
+                    "⏱️ 時間切れになる前に完了しよう！",
+                    "🌳 木は通り抜けられません"
+                ],
+                rulesCloseBtn: "プレイ開始! 🎉",
+                endMessage: "🎉 おめでとうございます! 🎉",
+                endDetails: "時間内にゲームをクリアしました!",
+                playAgain: "遊ぶ! 🎮",
+                viewCard: "バースデーカード 🎂"
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('languagePopup').style.display = 'flex';
+            
+            const savedLanguage = sessionStorage.getItem('birthdayLanguage');
+            if (savedLanguage) {
+                currentLanguage = savedLanguage;
+                applyTranslations();
+            }
+        });
+
+        let currentLanguage = 'en';
+
+        // Language selection handlers
+        document.getElementById('englishBtn').addEventListener('click', () => {
+            currentLanguage = 'en';
+            sessionStorage.setItem('birthdayLanguage', 'en');
+            document.getElementById('languagePopup').style.display = 'none';
+            applyTranslations();
+        });
+
+        document.getElementById('japaneseBtn').addEventListener('click', () => {
+            currentLanguage = 'ja';
+            sessionStorage.setItem('birthdayLanguage', 'ja');
+            document.getElementById('languagePopup').style.display = 'none';
+            applyTranslations();
+        });
+
+        function applyTranslations() {
+            const lang = translations[currentLanguage];
+            
+            // Main UI
+            document.getElementById('birthdayHeading').textContent = lang.title;
+            document.getElementById('startBtn').textContent = lang.startButton;
+            document.getElementById('cardBtn').textContent = lang.cardButton;
+            
+            // Score board
+            const scoreBoard = document.getElementById('scoreBoard');
+            const currentScore = document.getElementById('score') ? document.getElementById('score').textContent : "0";
+            const currentTime = document.getElementById('timer') ? document.getElementById('timer').textContent : "60";
+            const currentLives = document.getElementById('lives') ? document.getElementById('lives').innerHTML : "❤️❤️❤️❤️❤️";
+
+            scoreBoard.innerHTML = `
+                ${lang.scoreText}<span id="score">${currentScore}</span> | 
+                ${lang.timeText}<span id="timer">${currentTime}</span>s | 
+                ${lang.livesText}<span class="life-counter" id="lives">${currentLives}</span>
+            `;
+            
+            // Name popup
+            const namePopup = document.getElementById('namePopup');
+            document.getElementById('namePopupTitle').textContent = lang.namePopupTitle;
+            document.getElementById('namePopupText').textContent = lang.namePopupText;
+            document.getElementById('userName').placeholder = lang.namePlaceholder;
+            document.getElementById('submitName').textContent = lang.nameSubmitBtn;
+            
+            // Rules popup
+            document.getElementById('rulesTitle').textContent = lang.rulesTitle;
+            const rulesList = document.getElementById('rulesList');
+            rulesList.innerHTML = lang.rulesItems.map(item => 
+                `<li>${item.replace(/^([^ ]+)/, '<span class="rules-emoji">$1</span>')}</li>`
+            ).join('');
+            document.getElementById('closeRules').textContent = lang.rulesCloseBtn;
+            
+            // Game end popup
+            document.getElementById('endMessage').textContent = lang.endMessage;
+            document.getElementById('endDetails').textContent = lang.endDetails;
+            document.getElementById('playAgainBtn').textContent = lang.playAgain;
+            document.getElementById('viewCardBtn').textContent = lang.viewCard;
+
+            // Language flag - show opposite flag (click to switch to other language)
+            document.getElementById('currentLanguageFlag').textContent = currentLanguage === 'en' ? '🇯🇵' : '🇬🇧';
+            
+            // Update birthday heading with name if exists
+            const storedName = sessionStorage.getItem('birthdayPlayerName');
+            if (storedName) {
+                document.getElementById('birthdayHeading').innerHTML = 
+                    currentLanguage === 'en' 
+                        ? `Happy Birthday, <span class="birthday-name">${storedName}</span>! 😺 Collect Fish, Avoid Bombs! 🎉`
+                        : `お誕生日おめでとう, <span class="birthday-name">${storedName}</span>さん! 😺 魚を集めて、爆弾を避けよう! 🎉`;
+            }
+        }
+
+        // Check saved language
+        const savedLanguage = sessionStorage.getItem('birthdayLanguage');
+        if (savedLanguage) {
+            currentLanguage = savedLanguage;
+            document.getElementById('languagePopup').style.display = 'none';
+            applyTranslations();
+        }
 
         // Show popup when page loads
         window.addEventListener('load', () => {
@@ -616,19 +842,28 @@
         function handleNameSubmit() {
             const name = userNameInput.value.trim();
             if (name) {
+                // Store the name in sessionStorage so it persists
+                sessionStorage.setItem('birthdayPlayerName', name);
+                
                 // Update the heading with the user's name
-                birthdayHeading.innerHTML = `Happy Birthday, <span class="birthday-name">${name}</span>! 😺 Collect Fish, Avoid Bombs! 🎉`;
+                updateBirthdayHeading(name);
                 
                 // Hide the popup
                 namePopup.style.display = 'none';
                 rulesPopup.style.display = 'flex';
-                
-                // Store the name in localStorage so it persists
-                localStorage.setItem('birthdayPlayerName', name);
             } else {
-                alert("Please enter your name to continue!");
+                alert(currentLanguage === 'en' 
+                    ? "Please enter your name to continue!" 
+                    : "続けるには名前を入力してください!");
                 userNameInput.focus();
             }
+        }
+
+        function updateBirthdayHeading(name) {
+            document.getElementById('birthdayHeading').innerHTML = 
+                currentLanguage === 'en' 
+                    ? `Happy Birthday, <span class="birthday-name">${name}</span>! 😺 Collect Fish, Avoid Bombs! 🎉`
+                    : `お誕生日おめでとう, <span class="birthday-name">${name}</span>さん! 😺 魚を集めて、爆弾を避けよう! 🎉`;
         }
 
         submitNameBtn.addEventListener('click', handleNameSubmit);
@@ -640,16 +875,16 @@
             }
         });
 
-        // Close rules and start game
+        // Close rules and Play
         closeRulesBtn.addEventListener('click', () => {
             rulesPopup.style.display = 'none';
             initializeGame(); // Start the actual game
         });
 
         // Check if we already have a name stored
-        const storedName = localStorage.getItem('birthdayPlayerName');
+        const storedName = sessionStorage.getItem('birthdayPlayerName');
         if (storedName) {
-            birthdayHeading.innerHTML = `Happy Birthday, <span class="birthday-name">${storedName}</span>! 😺 Collect Fish, Avoid Bombs! 🎉`;
+            updateBirthdayHeading(storedName);
             namePopup.style.display = 'none';
         }
 
@@ -864,14 +1099,24 @@
             finalScore.textContent = score;
             
             if (success) {
-                endMessage.innerHTML = '🎉 Birthday Success! 🎉';
-                endDetails.textContent = lives > 0 
-                    ? `You completed the game with ${lives} ${lives === 1 ? 'life' : 'lives'} remaining!` 
-                    : 'You completed the game just in time!';
+                endMessage.innerHTML = currentLanguage === 'en' 
+                    ? '🎉 Birthday Success! 🎉' 
+                    : '🎉 おめでとうございます! 🎉';
+                endDetails.textContent = currentLanguage === 'en'
+                    ? lives > 0 
+                        ? `You completed the game with ${lives} ${lives === 1 ? 'life' : 'lives'} remaining!` 
+                        : 'You completed the game just in time!'
+                    : lives > 0
+                        ? `残り${lives}ライフでゲームをクリアしました!`
+                        : 'ぎりぎりでゲームをクリアしました!';
                 createConfetti();
             } else {
-                endMessage.innerHTML = '💖 Game Over! 💖';
-                endDetails.textContent = 'You ran out of lives! Happy Birthday anyway!';
+                endMessage.innerHTML = currentLanguage === 'en' 
+                    ? '💖 Game Over! 💖' 
+                    : '💖 ゲームオーバー! 💖';
+                endDetails.textContent = currentLanguage === 'en'
+                    ? 'You ran out of lives! Happy Birthday anyway!'
+                    : 'ライフがなくなりました！それでもお誕生日おめでとう!';
             }
             
             // Show the beautiful end popup
@@ -895,7 +1140,7 @@
             }
         }
 
-        // Play Again button
+        // Play button
         document.getElementById('playAgainBtn').addEventListener('click', () => {
             document.getElementById('gameEndPopup').style.display = 'none';
             resetGame();
@@ -913,7 +1158,7 @@
             catPosition = { x: 0, y: 0 };
             document.getElementById('score').textContent = '0';
             document.getElementById('timer').textContent = '60';
-            document.getElementById('lives').innerHTML = '❤️'.repeat(MAX_LIVES);
+            updateLifeDisplay();
             document.getElementById('cardBtn').style.display = 'none';
             
             positionElement(cat, 0, 0);
@@ -935,7 +1180,7 @@
 
         function initializeGame() {
             gameArea.style.display = 'block';
-            document.getElementById('startBtn').textContent = 'Play Again! 🎮';
+            document.getElementById('startBtn').textContent = currentLanguage === 'en' ? 'Play! 🎮' : '遊ぶ! 🎮';
             resetGame();
         }
 
@@ -997,6 +1242,38 @@
             trees.forEach(tree => positionElement(tree.element, tree.x, tree.y));
             fishes.forEach(fish => positionElement(fish.element, fish.x, fish.y));
         });
+
+        document.getElementById('toggleLanguageBtn').addEventListener('click', function() {
+            // Pause game if running
+            const wasGameActive = gameActive;
+            if (gameActive) {
+                gameActive = false;
+                clearInterval(timerInterval);
+            }
+
+            const savedTime = timeLeft;
+            
+            // Switch language
+            currentLanguage = currentLanguage === 'en' ? 'ja' : 'en';
+            sessionStorage.setItem('birthdayLanguage', currentLanguage);
+            applyTranslations();
+            
+            timeLeft = savedTime;
+            document.getElementById('timer').textContent = timeLeft;
+
+            // Show opposite flag (click to switch to other language)
+            document.getElementById('currentLanguageFlag').textContent = 
+                currentLanguage === 'en' ? '🇯🇵' : '🇬🇧';
+            
+            // Restore game state if it was running
+            if (wasGameActive) {
+                gameActive = true;
+                timerInterval = setInterval(updateTimer, 1000);
+            }
+        });
+
+        // Initial language flag setup
+        document.getElementById('currentLanguageFlag').textContent = currentLanguage === 'en' ? '🇯🇵' : '🇬🇧';
     </script>
 </body>
 </html>
