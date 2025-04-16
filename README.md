@@ -78,3 +78,5 @@ const MAX_LIVES = 5;
 
 ## 🔮 Note
 This project was initially generated with assistance from DeepSeek AI for discovering the power of this new AI model, then customized and enhanced! I did nothing, just prompt and prompt for the new features. Of course the code look like a mess but you can arrange it as you want, I just want to find out how strong this AI model is in the term of UIUX design.
+
+Feel free to enhance this silly pages
